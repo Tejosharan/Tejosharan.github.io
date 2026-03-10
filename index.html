@@ -1,0 +1,52 @@
+/* form.js — Contact form interaction */
+
+const btnSend   = document.getElementById('btn-send');
+const formName  = document.getElementById('form-name');
+const formEmail = document.getElementById('form-email');
+const formMsg   = document.getElementById('form-msg');
+const success   = document.getElementById('form-success');
+
+btnSend.addEventListener('click', () => {
+  const name  = formName.value.trim();
+  const email = formEmail.value.trim();
+  const msg   = formMsg.value.trim();
+
+  if (!name || !email || !msg) {
+    // Shake empty fields
+    [formName, formEmail, formMsg].forEach(f => {
+      if (!f.value.trim()) {
+        f.style.borderColor = '#ef4444';
+        f.style.animation = 'shake .3s ease';
+        setTimeout(() => {
+          f.style.borderColor = '';
+          f.style.animation = '';
+        }, 500);
+      }
+    });
+    return;
+  }
+
+  // Success state
+  btnSend.textContent = 'Sent! ✅';
+  btnSend.style.background = 'var(--green)';
+  btnSend.disabled = true;
+  success.style.display = 'block';
+
+  // Clear form
+  formName.value = '';
+  formEmail.value = '';
+  formMsg.value = '';
+
+  // Reset button after 4s
+  setTimeout(() => {
+    btnSend.textContent = 'Send Message →';
+    btnSend.style.background = '';
+    btnSend.disabled = false;
+    success.style.display = 'none';
+  }, 4000);
+});
+
+// Add shake keyframe
+const style = document.createElement('style');
+style.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }';
+document.head.appendChild(style);
