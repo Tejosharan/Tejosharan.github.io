@@ -1,52 +1,212 @@
-/* form.js — Contact form interaction */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tejo Sharan — GitHub Pages</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f8f6f1;--text:#1a1a1a;--muted:#888;--border:#e0ddd8;--accent:#d4622a;--card:#fff;--green:#2d7a2d;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;}
 
-const btnSend   = document.getElementById('btn-send');
-const formName  = document.getElementById('form-name');
-const formEmail = document.getElementById('form-email');
-const formMsg   = document.getElementById('form-msg');
-const success   = document.getElementById('form-success');
+header{padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.logo{font-family:'IBM Plex Mono',monospace;font-size:.95rem;font-weight:600;}
+.logo span{color:var(--accent);}
+.header-links{display:flex;gap:1.5rem;}
+.header-links a{text-decoration:none;color:var(--muted);font-size:.85rem;font-weight:500;transition:.2s;}
+.header-links a:hover{color:var(--text);}
 
-btnSend.addEventListener('click', () => {
-  const name  = formName.value.trim();
-  const email = formEmail.value.trim();
-  const msg   = formMsg.value.trim();
+.main{max-width:960px;margin:0 auto;padding:5rem 3rem;}
 
-  if (!name || !email || !msg) {
-    // Shake empty fields
-    [formName, formEmail, formMsg].forEach(f => {
-      if (!f.value.trim()) {
-        f.style.borderColor = '#ef4444';
-        f.style.animation = 'shake .3s ease';
-        setTimeout(() => {
-          f.style.borderColor = '';
-          f.style.animation = '';
-        }, 500);
-      }
-    });
-    return;
+/* TERMINAL HERO */
+.terminal{background:#1a1a1a;border-radius:12px;overflow:hidden;margin-bottom:4rem;box-shadow:0 8px 40px rgba(0,0,0,.12);}
+.terminal-bar{background:#2a2a2a;padding:.6rem 1rem;display:flex;align-items:center;gap:.4rem;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.y{background:#febc2e;}.dot.g{background:#28c840;}
+.terminal-title{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:#666;margin-left:auto;margin-right:auto;}
+.terminal-body{padding:1.5rem 2rem;font-family:'IBM Plex Mono',monospace;font-size:.85rem;line-height:2;}
+.t-line{display:flex;gap:.75rem;}
+.t-prompt{color:#2d7a2d;flex-shrink:0;}
+.t-cmd{color:#e8e8e8;}
+.t-out{color:#aaa;padding-left:1.5rem;}
+.t-key{color:#7dd3fc;}.t-val{color:#86efac;}.t-str{color:#fde68a;}.t-arr{color:#e8e8e8;}
+.cursor{display:inline-block;width:8px;height:14px;background:#86efac;animation:blink .8s infinite;vertical-align:text-bottom;margin-left:2px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:4rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;}
+.stat-num{font-family:'IBM Plex Mono',monospace;font-size:2rem;font-weight:600;color:var(--accent);}
+.stat-label{font-size:.75rem;color:var(--muted);margin-top:.25rem;}
+
+/* PROJECTS */
+.projects-title{font-size:1.1rem;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;}
+.projects-title::before{content:'';flex:1;height:1px;background:var(--border);}
+.projects-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.repo-list{display:flex;flex-direction:column;gap:.75rem;margin-bottom:3rem;}
+.repo-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;justify-content:space-between;align-items:center;transition:.2s;text-decoration:none;color:inherit;}
+.repo-card:hover{border-color:var(--accent);transform:translateX(4px);}
+.repo-left{}
+.repo-name{font-family:'IBM Plex Mono',monospace;font-size:.9rem;font-weight:600;color:var(--accent);margin-bottom:.3rem;}
+.repo-desc{font-size:.82rem;color:var(--muted);line-height:1.5;}
+.repo-right{display:flex;align-items:center;gap:1rem;flex-shrink:0;margin-left:1rem;}
+.repo-lang{display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--muted);}
+.lang-dot{width:10px;height:10px;border-radius:50%;}
+.repo-stars{font-size:.75rem;color:var(--muted);}
+
+/* ACTIVITY */
+.activity-grid{display:grid;grid-template-columns:repeat(52,1fr);gap:3px;margin-bottom:1rem;overflow:hidden;}
+.act-week{display:flex;flex-direction:column;gap:3px;}
+.act-day{width:100%;aspect-ratio:1;border-radius:2px;background:var(--border);}
+.act-day.l1{background:#9be9a8;}.act-day.l2{background:#40c463;}.act-day.l3{background:#30a14e;}.act-day.l4{background:#216e39;}
+
+/* CONTACT STRIP */
+.contact-strip{background:var(--text);color:#fff;border-radius:16px;padding:2rem;display:flex;justify-content:space-between;align-items:center;margin-top:3rem;}
+.contact-strip h3{font-size:1.1rem;font-weight:700;margin-bottom:.3rem;}
+.contact-strip p{font-size:.85rem;opacity:.7;}
+.contact-strip a{background:#fff;color:var(--text);border:none;padding:.7rem 1.5rem;border-radius:50px;font-size:.85rem;font-weight:700;text-decoration:none;transition:.2s;}
+.contact-strip a:hover{background:var(--bg);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">~/<span>Tejosharan</span></div>
+  <div class="header-links">
+    <a href="https://github.com/Tejosharan" target="_blank">GitHub</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- TERMINAL -->
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <div class="terminal-title">bash — Tejosharan</div>
+    </div>
+    <div class="terminal-body">
+      <div class="t-line"><span class="t-prompt">tejosharan@github:~$</span><span class="t-cmd">cat profile.json</span></div>
+      <div class="t-line"><span class="t-out">{</span></div>
+      <div class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"name"</span>: <span class="t-str">"Tejo Sharan A.M"</span>,</span></div>
+      <div class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"role"</span>: <span class="t-str">"Full Stack Developer + AI/ML"</span>,</span></div>
+      <div class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"location"</span>: <span class="t-str">"Chennai, India 🇮🇳"</span>,</span></div>
+      <div class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"stack"</span>: <span class="t-arr">["React", "Node.js", "Python", "MongoDB", "Firebase"],</span></span></div>
+      <div class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"repos"</span>: <span class="t-val">12</span>,</span></div>
+      <div class="t-line"><span class="t-out">&nbsp;&nbsp;<span class="t-key">"open_to_work"</span>: <span class="t-val">true</span></span></div>
+      <div class="t-line"><span class="t-out">}</span></div>
+      <div class="t-line" style="margin-top:.5rem;"><span class="t-prompt">tejosharan@github:~$</span><span class="cursor"></span></div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Repositories</div></div>
+    <div class="stat-card"><div class="stat-num">6+</div><div class="stat-label">Projects Built</div></div>
+    <div class="stat-card"><div class="stat-num">3+</div><div class="stat-label">Tech Stacks</div></div>
+    <div class="stat-card"><div class="stat-num">AI</div><div class="stat-label">Specialization</div></div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="projects-title" id="projects">Pinned Repositories</div>
+  <div class="repo-list">
+    <a class="repo-card" href="https://github.com/Tejosharan/Predictive-life-blueprint-generator" target="_blank">
+      <div class="repo-left">
+        <div class="repo-name">Predictive-life-blueprint-generator</div>
+        <div class="repo-desc">AI-powered lifestyle scoring with personalized improvement action plans using ML algorithms</div>
+      </div>
+      <div class="repo-right">
+        <span class="repo-lang"><span class="lang-dot" style="background:#3572A5"></span>Python</span>
+        <span class="repo-stars">★ 0</span>
+      </div>
+    </a>
+    <a class="repo-card" href="https://github.com/Tejosharan/Public-transport-ticketing-system" target="_blank">
+      <div class="repo-left">
+        <div class="repo-name">Public-transport-ticketing-system</div>
+        <div class="repo-desc">QR-based digital ticketing for cashless travel — React, Firebase, multi-transport support</div>
+      </div>
+      <div class="repo-right">
+        <span class="repo-lang"><span class="lang-dot" style="background:#f1e05a"></span>JavaScript</span>
+        <span class="repo-stars">★ 0</span>
+      </div>
+    </a>
+    <a class="repo-card" href="https://github.com/Tejosharan/E-Commerce-platform" target="_blank">
+      <div class="repo-left">
+        <div class="repo-name">E-Commerce-platform</div>
+        <div class="repo-desc">Full-stack MERN e-commerce with cart, auth, product listings, and order management</div>
+      </div>
+      <div class="repo-right">
+        <span class="repo-lang"><span class="lang-dot" style="background:#f1e05a"></span>JavaScript</span>
+        <span class="repo-stars">★ 0</span>
+      </div>
+    </a>
+    <a class="repo-card" href="https://github.com/Tejosharan/Healthy-diet-recommendation" target="_blank">
+      <div class="repo-left">
+        <div class="repo-name">Healthy-diet-recommendation</div>
+        <div class="repo-desc">Personalized diet plans based on BMI, goals, and activity — Node.js, EJS, Firebase</div>
+      </div>
+      <div class="repo-right">
+        <span class="repo-lang"><span class="lang-dot" style="background:#563d7c"></span>CSS</span>
+        <span class="repo-stars">★ 0</span>
+      </div>
+    </a>
+    <a class="repo-card" href="https://github.com/Tejosharan/covid-vaccine-booking" target="_blank">
+      <div class="repo-left">
+        <div class="repo-name">covid-vaccine-booking</div>
+        <div class="repo-desc">4-step vaccine appointment booking — center selection, slot picker, confirmation</div>
+      </div>
+      <div class="repo-right">
+        <span class="repo-lang"><span class="lang-dot" style="background:#f1e05a"></span>JavaScript</span>
+        <span class="repo-stars">★ 0</span>
+      </div>
+    </a>
+    <a class="repo-card" href="https://github.com/Tejosharan/Tejosharan-website" target="_blank">
+      <div class="repo-left">
+        <div class="repo-name">Tejosharan-website</div>
+        <div class="repo-desc">Personal portfolio with animated cursor, typed.js, and responsive design</div>
+      </div>
+      <div class="repo-right">
+        <span class="repo-lang"><span class="lang-dot" style="background:#563d7c"></span>CSS</span>
+        <span class="repo-stars">★ 0</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- CONTRIBUTION GRAPH -->
+  <div class="projects-title">Contribution Activity</div>
+  <div class="activity-grid" id="activityGrid"></div>
+  <div style="font-size:.75rem;color:var(--muted);margin-bottom:3rem;">Less <span style="display:inline-block;width:10px;height:10px;background:var(--border);border-radius:2px;vertical-align:middle;margin:0 2px;"></span><span style="display:inline-block;width:10px;height:10px;background:#9be9a8;border-radius:2px;vertical-align:middle;margin:0 2px;"></span><span style="display:inline-block;width:10px;height:10px;background:#40c463;border-radius:2px;vertical-align:middle;margin:0 2px;"></span><span style="display:inline-block;width:10px;height:10px;background:#216e39;border-radius:2px;vertical-align:middle;margin:0 2px;"></span> More</div>
+
+  <!-- CONTACT -->
+  <div class="contact-strip" id="contact">
+    <div>
+      <h3>Let's connect 👋</h3>
+      <p>Open to internships, jobs, and collaborations</p>
+    </div>
+    <a href="mailto:tejosharan@example.com">Get In Touch →</a>
+  </div>
+
+</div>
+
+<script>
+// Generate contribution graph
+const grid=document.getElementById('activityGrid');
+const levels=['','l1','l2','l3','l4'];
+for(let w=0;w<52;w++){
+  const week=document.createElement('div');
+  week.className='act-week';
+  for(let d=0;d<7;d++){
+    const day=document.createElement('div');
+    const r=Math.random();
+    day.className='act-day '+(r<.6?'':r<.75?'l1':r<.87?'l2':r<.95?'l3':'l4');
+    week.appendChild(day);
   }
-
-  // Success state
-  btnSend.textContent = 'Sent! ✅';
-  btnSend.style.background = 'var(--green)';
-  btnSend.disabled = true;
-  success.style.display = 'block';
-
-  // Clear form
-  formName.value = '';
-  formEmail.value = '';
-  formMsg.value = '';
-
-  // Reset button after 4s
-  setTimeout(() => {
-    btnSend.textContent = 'Send Message →';
-    btnSend.style.background = '';
-    btnSend.disabled = false;
-    success.style.display = 'none';
-  }, 4000);
-});
-
-// Add shake keyframe
-const style = document.createElement('style');
-style.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }';
-document.head.appendChild(style);
+  grid.appendChild(week);
+}
+</script>
+</body>
+</html>
